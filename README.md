@@ -6,4 +6,4 @@ To run this code:
  git clone https://github.com/santoshkulk/stockTradesConsumer
 
 2) Run the code:
-mvn compile exec:java -Dexec.mainClass="com.amazonaws.services.kinesis.samples.stocktrades.processor.StockTradesProcessor" -Dexec.args="bcapp bcstream ap-southeast-2"
+mvn compile exec:java -Dexec.mainClass="com.amazonaws.services.kinesis.samples.stocktrades.processor.StockTradesProcessor" -Dexec.args="bcapp bcstream ap-southeast-2 TRIM_HORIZON"

@@ -47,7 +47,7 @@ public class StockTradesProcessor {
             Logger.getLogger("com.amazonaws.services.kinesis.samples.stocktrades.processor");
 
     private static void checkUsage(String[] args) {
-        if (args.length != 3) {
+        if (args.length != 4) {
             System.err.println("Usage: " + StockTradesProcessor.class.getSimpleName()
                     + " <application name> <stream name> <region>");
             System.exit(1);
@@ -81,11 +81,14 @@ public class StockTradesProcessor {
         AWSCredentialsProvider credentialsProvider = CredentialUtils.getCredentialsProvider();
 
         String workerId = String.valueOf(UUID.randomUUID());
-        KinesisClientLibConfiguration kclConfig =
+        InitialPositionInStream initialPositionInStream = InitialPositionInStream.valueOf(args[3]);
+        
+        LOG.info("initial position in the stream is " + initialPositionInStream.toString());
+		KinesisClientLibConfiguration kclConfig =
                 new KinesisClientLibConfiguration(applicationName, streamName, credentialsProvider, workerId)
             .withRegionName(region.getName())
+            .withInitialPositionInStream(initialPositionInStream )
             .withCommonClientConfig(ConfigurationUtils.getClientConfigWithUserAgent());
-
         IRecordProcessorFactory recordProcessorFactory = new StockTradeRecordProcessorFactory();
 
         // Create the KCL worker with the stock trade record processor factory
