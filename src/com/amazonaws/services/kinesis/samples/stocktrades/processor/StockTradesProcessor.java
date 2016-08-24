@@ -30,6 +30,7 @@ import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibC
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker;
 import com.amazonaws.services.kinesis.samples.stocktrades.utils.ConfigurationUtils;
 import com.amazonaws.services.kinesis.samples.stocktrades.utils.CredentialUtils;
+import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStream;
 
 /**
  * Uses the Kinesis Client Library (KCL) to continuously consume and process stock trade
