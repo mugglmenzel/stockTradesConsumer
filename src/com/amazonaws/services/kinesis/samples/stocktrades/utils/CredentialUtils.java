@@ -17,6 +17,7 @@ package com.amazonaws.services.kinesis.samples.stocktrades.utils;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 
 /**
@@ -31,7 +32,7 @@ public class CredentialUtils {
          */
         AWSCredentialsProvider credentialsProvider = null;
         try {
-            credentialsProvider = new ProfileCredentialsProvider("default");
+            credentialsProvider = new DefaultAWSCredentialsProviderChain();
         } catch (Exception e) {
             throw new AmazonClientException(
                     "Cannot load the credentials from the credential profiles file. " +
