@@ -101,18 +101,18 @@ public class StockTradeRecordProcessor implements IRecordProcessor {
         System.out.println("****** Shard " + kinesisShardId + " stats for last 1 minute ******\n" +
                 stockStats + "\n" +
                 "****************************************************************\n");
-        Map<String, AttributeValue> records = new HashMap<>();
-        records.put(StockTrade.TradeType.BUY.name() + "-PopularStock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.BUY)));
-        records.put(StockTrade.TradeType.BUY.name() + "-PopularStockCount", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.BUY).toString()));
-        records.put(StockTrade.TradeType.SELL.name() + "-PopularStock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.SELL)));
-        records.put(StockTrade.TradeType.SELL.name() + "-PopularStockCount", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.SELL).toString()));
+        Map<String, AttributeValue> buy = new HashMap<>();
+        buy.put("Metric", new AttributeValue().withS(StockTrade.TradeType.BUY.name() + "-PopularStock"));
+        buy.put("Stock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.BUY)));
+        buy.put("Count", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.BUY).toString()));
+        dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(buy));
 
-        for(Map.Entry<String, AttributeValue> k : records.entrySet()) {
-            Map<String, AttributeValue> record = new HashMap<>();
-            record.put("Metric", new AttributeValue().withS(k.getKey()));
-            record.put("Value", k.getValue());
-            dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(record));
-        }
+        Map<String, AttributeValue> sell = new HashMap<>();
+        buy.put("Metric", new AttributeValue().withS(StockTrade.TradeType.SELL.name() + "-PopularStock"));
+        buy.put("Stock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.SELL)));
+        buy.put("Count", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.SELL).toString()));
+        dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(sell));
+
     }
 
     private void resetStats() {
