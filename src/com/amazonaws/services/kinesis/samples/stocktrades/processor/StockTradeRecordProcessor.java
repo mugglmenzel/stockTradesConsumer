@@ -109,7 +109,7 @@ public class StockTradeRecordProcessor implements IRecordProcessor {
 
         for(Map.Entry<String, AttributeValue> k : records.entrySet()) {
             Map<String, AttributeValue> record = new HashMap<>();
-            record.put("Metric", new AttributeValue().withN(k.getKey()));
+            record.put("Metric", new AttributeValue().withS(k.getKey()));
             record.put("Value", k.getValue());
             dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(record));
         }
