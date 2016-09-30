@@ -93,11 +93,11 @@ public class StockStats {
                 largestSellOrderQuantity, largestSellOrderStock);
     }
 
-    private String getMostPopularStock(TradeType tradeType) {
+    public String getMostPopularStock(TradeType tradeType) {
         return mostPopularByTradeType.get(tradeType);
     }
 
-    private Long getMostPopularStockCount(TradeType tradeType) {
+    public Long getMostPopularStockCount(TradeType tradeType) {
         String mostPopular = getMostPopularStock(tradeType);
         return countsByTradeType.get(tradeType).get(mostPopular);
     }

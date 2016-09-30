@@ -90,7 +90,7 @@ public class StockTradesProcessor {
             .withRegionName(region.getName())
             .withInitialPositionInStream(initialPositionInStream )
             .withCommonClientConfig(ConfigurationUtils.getClientConfigWithUserAgent());
-        IRecordProcessorFactory recordProcessorFactory = new StockTradeRecordProcessorFactory();
+        IRecordProcessorFactory recordProcessorFactory = new StockTradeRecordProcessorFactory(region);
 
         // Create the KCL worker with the stock trade record processor factory
         Worker worker = new Worker(recordProcessorFactory, kclConfig);

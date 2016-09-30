@@ -15,11 +15,11 @@
 
 package com.amazonaws.services.kinesis.samples.stocktrades.processor;
 
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import com.amazonaws.regions.Region;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.InvalidStateException;
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException;
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.ThrottlingException;
@@ -28,14 +28,23 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorC
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownReason;
 import com.amazonaws.services.kinesis.model.Record;
 import com.amazonaws.services.kinesis.samples.stocktrades.model.StockTrade;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Processes records retrieved from stock trades stream.
- *
  */
 public class StockTradeRecordProcessor implements IRecordProcessor {
 
     private static final Log LOG = LogFactory.getLog(StockTradeRecordProcessor.class);
+    private static final String STATS_TARGET_TABLE = "StockTradeStats";
+
+    private AmazonDynamoDB dynamo;
+
     private String kinesisShardId;
 
     // Reporting interval
@@ -48,6 +57,10 @@ public class StockTradeRecordProcessor implements IRecordProcessor {
 
     // Aggregates stats for stock trades
     private StockStats stockStats = new StockStats();
+
+    public StockTradeRecordProcessor(Region region) {
+        this.dynamo = new AmazonDynamoDBClient().withRegion(region);
+    }
 
     /**
      * {@inheritDoc}
@@ -88,6 +101,18 @@ public class StockTradeRecordProcessor implements IRecordProcessor {
         System.out.println("****** Shard " + kinesisShardId + " stats for last 1 minute ******\n" +
                 stockStats + "\n" +
                 "****************************************************************\n");
+        Map<String, AttributeValue> records = new HashMap<>();
+        records.put(StockTrade.TradeType.BUY.name() + "-PopularStock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.BUY)));
+        records.put(StockTrade.TradeType.BUY.name() + "-PopularStockCount", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.BUY).toString()));
+        records.put(StockTrade.TradeType.SELL.name() + "-PopularStock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.SELL)));
+        records.put(StockTrade.TradeType.SELL.name() + "-PopularStockCount", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.SELL).toString()));
+
+        for(Map.Entry<String, AttributeValue> k : records.entrySet()) {
+            Map<String, AttributeValue> record = new HashMap<>();
+            record.put("Metric", new AttributeValue().withN(k.getKey()));
+            record.put("Value", k.getValue());
+            dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(record));
+        }
     }
 
     private void resetStats() {
