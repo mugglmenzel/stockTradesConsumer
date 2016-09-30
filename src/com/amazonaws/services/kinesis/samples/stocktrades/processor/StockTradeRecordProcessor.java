@@ -102,15 +102,15 @@ public class StockTradeRecordProcessor implements IRecordProcessor {
                 stockStats + "\n" +
                 "****************************************************************\n");
         Map<String, AttributeValue> buy = new HashMap<>();
-        buy.put("Metric", new AttributeValue().withS(StockTrade.TradeType.BUY.name() + "-PopularStock"));
+        buy.put("Type", new AttributeValue().withS(StockTrade.TradeType.BUY.name()));
         buy.put("Stock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.BUY)));
         buy.put("Count", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.BUY).toString()));
         dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(buy));
 
         Map<String, AttributeValue> sell = new HashMap<>();
-        buy.put("Metric", new AttributeValue().withS(StockTrade.TradeType.SELL.name() + "-PopularStock"));
-        buy.put("Stock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.SELL)));
-        buy.put("Count", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.SELL).toString()));
+        sell.put("Type", new AttributeValue().withS(StockTrade.TradeType.SELL.name()));
+        sell.put("Stock", new AttributeValue().withS(stockStats.getMostPopularStock(StockTrade.TradeType.SELL)));
+        sell.put("Count", new AttributeValue().withN(stockStats.getMostPopularStockCount(StockTrade.TradeType.SELL).toString()));
         dynamo.putItem(new PutItemRequest().withTableName(STATS_TARGET_TABLE).withItem(sell));
 
     }
